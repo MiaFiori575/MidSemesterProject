@@ -22,7 +22,6 @@ protobuf==6.33.0
 pyOpenSSL==25.3.0
 pyperf==2.9.0
 pytest==8.3.4
-pywin32==308
 redis==6.4.0
 seaborn==0.13.2
 Sphinx==8.2.3
@@ -32,4 +31,5 @@ urllib3_secure_extra==0.1.0
 usercustomize==1.0.0
 xmlrpclib==1.0.1
 xx==3.3.2
+
 
