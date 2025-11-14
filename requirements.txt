@@ -11,7 +11,7 @@ importlib_resources==6.4.0
 ini2toml==0.15
 ipython==8.30.0
 ipywidgets==8.1.5
-pyjnius==1.1.0
+Pyjnius==1.7.0
 keyring==25.6.0
 matplotlib==3.10.7
 mod==0.3.0
