@@ -1,9 +1,9 @@
-attr==0.3.2
+attrs==0.3.2
 ConfigParser==7.2.0
 cryptography==46.0.3
 Cython==3.2.1
 dl==0.1.0
-docutils==0.22.2
+docutils==0.21.2
 filelock==3.20.0
 HTMLParser==0.0.2
 hypothesis==6.142.1
@@ -29,7 +29,8 @@ streamlit==1.49.1
 trove_classifiers==2025.9.11.17
 urllib3_secure_extra==0.1.0
 usercustomize==1.0.0
-xmlrpclib==1.0.1
 xx==3.3.2
+xx==3.3.2
+
 
 
