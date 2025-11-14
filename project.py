@@ -1,3 +1,5 @@
+
+
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -114,7 +116,7 @@ plt.rcParams.update({                     # This is the big difference to the co
     'axes.prop_cycle': plt.cycler(color=['#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', '#e377c2', '#7f7f7f', '#bcbd22', '#17becf']),
                                             # Setting a cycle for colors to be used
 })
-
+st.set_page_config(layout="wide")
 st.title("💩🦠🧫🧪💧 Wastewater: Using Spectral Signatures to Predict Total Solid Contamination")
 st.markdown(
     "<p style='text-align: center; font-size: 1.1em;'>Because sometimes you just need to know...</p>",
@@ -168,10 +170,11 @@ turb_imputed = impute_and_inverse_transform_turb(turb)
 # --- Vertical tab selector ---
 selected_tab = st.radio("📂 Navigation", [
     "🧠 Introduction",
+    "🧼 Data Cleaning",
     "🔍 IDA #6 Missing Data Analysis",
     "🏠 KNN Imputation",
     "📊 Spectral Signatures and Peak Detection",
-    "📈 Correlations"
+    "📈 Correlations and Statistics"
 ])
 
 # --- Tab 1: Introduction ---
@@ -194,6 +197,47 @@ if selected_tab == "🧠 Introduction":
     st.markdown("When NIR light is presented to samples high in chemical compounds containing these bonds, some of energy is absorbed by the sample in these specific wavelengths, and thus the reflected light has less intensity in these regions.")
     st.write("🛠️📐 Step 4: What physiochemical parameters are we trying to correlate?")
     st.markdown("I am trying to correlate total solids (total solids in a sample), total suspended solids (total solids minus dissolved solids), and turbidity of a sample (measured in NTU)")
+
+elif selected_tab == "🧼 Data Cleaning":
+    st.markdown("## 🧼 Data Cleaning Steps")
+
+    # --- Physiochemical Data Section ---
+    st.markdown("### ⚗️ Physiochemical Data")
+    st.write("First I split the physiochemical parameter data into TS, TSS, and Turbidity.")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.markdown("**Turbidity Data**")
+        st.dataframe(turb, height=200)
+
+    with col2:
+        st.markdown("**TSS Data**")
+        st.dataframe(tss, height=200)
+
+    with col3:
+        st.markdown("**TS Data**")
+        st.dataframe(ts, height=200)
+
+    # --- Spectral Data Section ---
+    st.markdown("### 🌈 Spectral Data")
+    st.markdown("**Clean Water Absorbances**")
+    st.write("""
+        From a different Excel file with multiple absorbances across a multitude of wavelengths, I separated the different sample types
+        with the goal of identifying similar peaks and valleys. These will later be combined with the physiochemical parameters at select wavelengths
+        to perform a correlation analysis.
+    """)
+    col1, col2, col3 = st.columns([3, 3, 3])
+    with col1:
+        st.markdown("**Clean Water**")
+        st.dataframe(blank, height=200,  use_container_width=True)
+
+    with col2:
+        st.markdown("**Treated Water**")
+        st.dataframe(tw, height=200,  use_container_width=True)
+
+    with col3:
+        st.markdown("**Blackwater**")
+        st.dataframe(bw, height=200,  use_container_width=True)
 
 # --- Tab 2: Missing Data Analysis ---
 elif selected_tab == "🔍 IDA #6 Missing Data Analysis":
@@ -264,23 +308,24 @@ elif selected_tab == "🏠 KNN Imputation":
 elif selected_tab == "📊 Spectral Signatures and Peak Detection":
     st.header("📊 Spectral Signature Analysis")
 
+    # Update plot style
     plt.rcParams.update({
-        'figure.figsize': (4, 10),
+        'figure.figsize': (4, 3),  # Smaller height
         'figure.dpi': 100,
         'font.family': 'fantasy',
-        'font.size': 12,
+        'font.size': 10,
         'axes.titlesize': 10,
-        'axes.labelsize': 14,
+        'axes.labelsize': 10,
         'axes.spines.top': False,
         'axes.spines.right': False,
         'xtick.direction': 'out',
         'ytick.direction': 'out',
-        'xtick.labelsize': 10,
-        'ytick.labelsize': 10,
-        'legend.fontsize': 10,
+        'xtick.labelsize': 8,
+        'ytick.labelsize': 8,
+        'legend.fontsize': 8,
         'legend.frameon': False,
-        'lines.linewidth': 3,
-        'lines.markersize': 18,
+        'lines.linewidth': 2,
+        'lines.markersize': 10,
         'grid.linewidth': 0.5,
         'grid.alpha': 0.8,
         'axes.prop_cycle': plt.cycler(color=[
@@ -290,56 +335,100 @@ elif selected_tab == "📊 Spectral Signatures and Peak Detection":
         ]),
     })
 
-    fig1, ax1 = plt.subplots()
-    ax1.plot(wavelengths, A1, label='Treated water sample')
-    ax1.plot(wavelengths, bw1, label='Blackwater sample')
-    ax1.plot(wavelengths, blnk1, label='Clean water')
-    ax1.set_title('Absorbance Signatures of Sample Types')
-    ax1.set_xlabel('Wavelength (nm)')
-    ax1.set_ylabel('Absorbance (AU)')
-    ax1.legend()
-    st.pyplot(fig1)
+    # --- Column 1: Absorbance Signatures ---
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.subheader("Absorbance Signatures")
+        st.markdown("Visual comparison of absorbance across treated, blackwater, and clean water samples.")
 
-    blnk1_peaks, _ = find_peaks(blnk1)
-    A1_peaks, _ = find_peaks(A1)
-    bw1_peaks, _ = find_peaks(bw1)
+        fig1, ax1 = plt.subplots()
+        ax1.plot(wavelengths, A1, label='Treated water')
+        ax1.plot(wavelengths, bw1, label='Blackwater')
+        ax1.plot(wavelengths, blnk1, label='Clean water')
+        ax1.set_title('Absorbance Signatures')
+        ax1.set_xlabel('Wavelength (nm)')
+        ax1.set_ylabel('Absorbance (AU)')
+        ax1.legend()
+        st.pyplot(fig1)
 
-    fig2, ax2 = plt.subplots()
-    ax2.plot(wavelengths, A1, label='Treated water sample')
-    ax2.plot(wavelengths, bw1, label='Blackwater sample')
-    ax2.plot(wavelengths, blnk1, label='Clean water')
-    ax2.plot(wavelengths[blnk1_peaks], blnk1[blnk1_peaks], "x", label='Clean water peaks')
-    ax2.plot(wavelengths[bw1_peaks], bw1[bw1_peaks], "x", label='Blackwater peaks')
-    ax2.plot(wavelengths[A1_peaks], A1[A1_peaks], "x", label='Treated water peaks')
-    ax2.set_title("Detected Peaks")
-    ax2.set_xlabel("Wavelength (nm)")
-    ax2.set_ylabel("Absorbance (AU)")
-    ax2.legend()
-    st.pyplot(fig2)
+    # --- Column 2: Detected Peaks ---
+    with col2:
+        st.subheader("Detected Peaks")
+        st.markdown("Peaks identified in each sample using `scipy.signal.find_peaks`.")
 
-    # --- Find Common Peaks Within Tolerance ---
+        blnk1_peaks, _ = find_peaks(blnk1)
+        A1_peaks, _ = find_peaks(A1)
+        bw1_peaks, _ = find_peaks(bw1)
+
+        fig2, ax2 = plt.subplots()
+        ax2.plot(wavelengths, A1, label='Treated water')
+        ax2.plot(wavelengths, bw1, label='Blackwater')
+        ax2.plot(wavelengths, blnk1, label='Clean water')
+        ax2.plot(wavelengths[blnk1_peaks], blnk1[blnk1_peaks], "x", label='Clean peaks')
+        ax2.plot(wavelengths[bw1_peaks], bw1[bw1_peaks], "x", label='Blackwater peaks')
+        ax2.plot(wavelengths[A1_peaks], A1[A1_peaks], "x", label='Treated peaks')
+        ax2.set_title("Detected Peaks")
+        ax2.set_xlabel("Wavelength (nm)")
+        ax2.set_ylabel("Absorbance (AU)")
+        ax2.legend()
+        st.pyplot(fig2)
+
+    # --- Common Peaks Section ---
+    st.subheader("Common Peaks Across All Samples")
+    st.markdown("Peaks shared across all three sample types within a ±2 nm tolerance.")
+
     tolerance = 2
-    com_peaks_tol = []
-    for val in A1_peaks:
-        if any(abs(val - p) <= tolerance for p in bw1_peaks) and any(abs(val - p) <= tolerance for p in blnk1_peaks):
-            com_peaks_tol.append(val)
+    com_peaks_tol = [
+        val for val in A1_peaks
+        if any(abs(val - p) <= tolerance for p in bw1_peaks)
+        and any(abs(val - p) <= tolerance for p in blnk1_peaks)
+    ]
 
-    # --- Figure 3: Common Peaks ---
-    fig3, ax3 = plt.subplots()
-    ax3.plot(wavelengths, A1, label='Treated water sample')
-    ax3.plot(wavelengths, bw1, label='Blackwater sample')
+    fig3, ax3 = plt.subplots(figsize=(6, 3))
+    ax3.plot(wavelengths, A1, label='Treated water')
+    ax3.plot(wavelengths, bw1, label='Blackwater')
     ax3.plot(wavelengths, blnk1, label='Clean water')
     ax3.plot(wavelengths[com_peaks_tol], A1[com_peaks_tol], "x", label='Common peaks (Treated)')
     ax3.plot(wavelengths[com_peaks_tol], bw1[com_peaks_tol], "x", label='Common peaks (Blackwater)')
     ax3.plot(wavelengths[com_peaks_tol], blnk1[com_peaks_tol], "x", label='Common peaks (Clean)')
-    ax3.set_title("Common Peaks Across All Samples")
+    ax3.set_title("Common Peaks")
     ax3.set_xlabel("Wavelength (nm)")
     ax3.set_ylabel("Absorbance (AU)")
     ax3.legend()
     st.pyplot(fig3)
 
-elif selected_tab == "📈 Correlations":
-    st.header("Correlations")
+    st.subheader("**Different visualization**")
+    import plotly.express as px
+    df = pd.DataFrame({
+    'Wavelength': wavelengths,
+    'Clean': blnk1,
+    'Treated': A1,
+    'Blackwater': bw1})
+
+    df_long = pd.melt(
+    df,
+    id_vars='Wavelength',
+    var_name='Sample',
+    value_name='Absorbance')
+
+    fig = px.line(
+    df_long,
+    x='Wavelength',
+    y='Absorbance',
+    color='Sample',
+    title='Interactive Absorbance Spectra',
+    labels={'Absorbance': 'Absorbance (AU)', 'Wavelength': 'Wavelength (nm)'})
+    st.plotly_chart(fig, use_container_width=True)
+
+
+    df_long = pd.melt(df.reset_index(), id_vars='Wavelength', var_name='Sample', value_name='Absorbance')
+    fig = px.line(df_long, x='Wavelength', y='Absorbance', color='Sample', title='Interactive Absorbance')
+    st.plotly_chart(fig)
+
+    
+  
+elif selected_tab == "📈 Correlations and Statistics":
+    st.header("Correlations and Statistics")
     #tss and turb data was imputed, no data missing for ts
 
     tw_tss = tss_imputed[0:96]
@@ -403,6 +492,7 @@ elif selected_tab == "📈 Correlations":
     ax3.tick_params(axis='x', labelsize=10)
     ax3.tick_params(axis='y', labelsize=10)
     st.pyplot(fig3)
+    
 
 
 #import streamlit as st
