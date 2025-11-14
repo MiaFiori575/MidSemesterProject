@@ -34,4 +34,3 @@ urllib3_secure_extra==0.1.0
 usercustomize==1.0.0
 xmlrpclib==1.0.1
 xx==3.3.2
-plotly[express]==5.24.1
