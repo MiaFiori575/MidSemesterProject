@@ -9,7 +9,7 @@ from sklearn.impute import KNNImputer
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from scipy.signal import find_peaks
-
+#import plotly.express as px
 
 #importing turbidity measurements 
 turb = pd.read_excel('physiochemical data.xlsx', sheet_name='Master Physiochem', usecols=['Turbidity (NTU)'])
@@ -397,33 +397,32 @@ elif selected_tab == "📊 Spectral Signatures and Peak Detection":
     ax3.legend()
     st.pyplot(fig3)
 
-    st.subheader("**Different visualization**")
-    import plotly.express as px
-    df = pd.DataFrame({
-    'Wavelength': wavelengths,
-    'Clean': blnk1,
-    'Treated': A1,
-    'Blackwater': bw1})
+    # st.subheader("**Different visualization**")
+    # df = pd.DataFrame({
+    # 'Wavelength': wavelengths,
+    # 'Clean': blnk1,
+    # 'Treated': A1,
+    # 'Blackwater': bw1})
 
-    df_long = pd.melt(
-    df,
-    id_vars='Wavelength',
-    var_name='Sample',
-    value_name='Absorbance')
+    # df_long = pd.melt(
+    # df,
+    # id_vars='Wavelength',
+    # var_name='Sample',
+    # value_name='Absorbance')
 
-    fig = px.line(
-    df_long,
-    x='Wavelength',
-    y='Absorbance',
-    color='Sample',
-    title='Interactive Absorbance Spectra',
-    labels={'Absorbance': 'Absorbance (AU)', 'Wavelength': 'Wavelength (nm)'})
-    st.plotly_chart(fig, use_container_width=True)
+    # fig = px.line(
+    # df_long,
+    # x='Wavelength',
+    # y='Absorbance',
+    # color='Sample',
+    # title='Interactive Absorbance Spectra',
+    # labels={'Absorbance': 'Absorbance (AU)', 'Wavelength': 'Wavelength (nm)'})
+    # st.plotly_chart(fig, use_container_width=True)
 
 
-    df_long = pd.melt(df.reset_index(), id_vars='Wavelength', var_name='Sample', value_name='Absorbance')
-    fig = px.line(df_long, x='Wavelength', y='Absorbance', color='Sample', title='Interactive Absorbance')
-    st.plotly_chart(fig)
+    # df_long = pd.melt(df.reset_index(), id_vars='Wavelength', var_name='Sample', value_name='Absorbance')
+    # fig = px.line(df_long, x='Wavelength', y='Absorbance', color='Sample', title='Interactive Absorbance')
+    # st.plotly_chart(fig)
 
     
   
